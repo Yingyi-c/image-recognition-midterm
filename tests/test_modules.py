@@ -5,21 +5,14 @@ from modules.metrics.service import calculate_mse, calculate_psnr
 from modules.color_analysis.service import convert_channels, calculate_histograms
 
 def test_kernel_validation():
-    assert parse_kernel("1,0,1
-0,1,0
-1,0,1").shape == (3, 3)
-    with pytest.raises(ValueError): parse_kernel("1,0
-0,1")
+    assert parse_kernel("1,0,1\n0,1,0\n1,0,1").shape == (3, 3)
+    with pytest.raises(ValueError): parse_kernel("1,0\n0,1")
     with pytest.raises(ValueError, match="非數字"):
-        parse_kernel("1,adf,1
-0,1,0
-1,0,1")
+        parse_kernel("1,adf,1\n0,1,0\n1,0,1")
 
 def test_filter_and_psnr_identity():
     image = np.full((8, 8, 3), 100, dtype=np.uint8)
-    result = apply_custom_kernel(image, parse_kernel("0,0,0
-0,1,0
-0,0,0"))
+    result = apply_custom_kernel(image, parse_kernel("0,0,0\n0,1,0\n0,0,0"))
     assert calculate_mse(image, result) == 0
     assert np.isinf(calculate_psnr(image, result))
 
